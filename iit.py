@@ -167,6 +167,10 @@ def extractFields(string, regexp):
     else:
         raise IITException("unable to match filename \"%s\" with regexp \"%s\"" % (string, regexp.pattern))
 
+def checkDependencies(deps):
+    for depName, checkCommand in deps:
+        if os.system(checkCommand) != 0:
+            raise IITException("program \"%s\" is not installed." % depName)
 
 def craftTaggingCommand(field_dict, file):
     cmd = "eyeD3"
@@ -180,6 +184,7 @@ def craftTaggingCommand(field_dict, file):
 if __name__ == "__main__":
     config = parseCmdLine()
     try:
+        checkDependencies([["eyeD3", "eyeD3 -h"]])
         extractionRegexp = mask2Regexp(config.mask)
         for filename in config.files:
             file_filtered = applyFilters(filename_filters, filename)
