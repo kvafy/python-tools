@@ -1,4 +1,4 @@
-import videoname_pretify as module
+import videoname_prettify as module
 import unittest
 
 class SimpleTest(unittest.TestCase):
@@ -33,3 +33,4 @@ class SimpleTest(unittest.TestCase):
 
 if __name__ == "__main__":
   unittest.main()
+
