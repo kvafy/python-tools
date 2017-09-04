@@ -8,8 +8,6 @@ import shutil
 import subprocess
 import tempfile
 
-# TODO tests
-# TODO pylama
 
 # Adds border (color, thickness [mm]) to an image by adding more pixels to the
 # edges. Enforces exact aspect ratio of the resulting image by cropping some of
@@ -58,10 +56,6 @@ def add_border(img, ratio, img_dims_mm, border_mm, color, dpi=None):
 
     # Grow border until it reaches the desired mm thickness in any dimension.
     border_px = 0
-    # while (
-    #         2 * border_px / (img_w_px + 2 * border_px) < 2 * border_mm / (img_w_mm + 2 * border_mm)
-    #         and
-    #         2 * border_px / (img_h_px + 2 * border_px) < 2 * border_mm / (img_h_mm + 2 * border_mm)):
     while (
             border_px / (img_w_px + 2 * border_px) < border_mm / img_w_mm
             and
@@ -171,28 +165,33 @@ def normalize(a, b):
 
 def process_args():
     parser = argparse.ArgumentParser(
-        description='Add border to images and resize them to specified size.')
-    parser.add_argument('images', metavar='IMAGES', nargs='+',
-                        help='Paths to the input images.')
+        description='Add border to images, resize them to specified size, and '
+                    'possibly convert to specified DPI.')
+    parser.add_argument('images', metavar='IMAGE', nargs='+',
+                        help='Path to an input image.')
     parser.add_argument('--out_dir', metavar='OUT_DIR', required=True,
                         help='Path to the output directory.')
     parser.add_argument('--img_size', metavar='<UNITS>x<UNITS>', required=True,
                         type=parse_dimensions,
-                        help='Desired size of the resulting image in '
-                             'millimeters, eg. "100x150". The image may be '
-                             'cropped on sides to make it fit. Orientation '
-                             'does not matter.')
+                        help='Desired dimensions of the resulting image '
+                             '(including border) in units specified by '
+                             '--units, eg. "100x150". The image may be '
+                             'cropped on sides to ensure exact aspect ratio. '
+                             'Image orientation does not matter.')
     parser.add_argument('--dpi', metavar='DPI', type=int,
                         help='Optional. DPI to which the image will be '
-                             're-sampled.')
+                             'scaled.')
     parser.add_argument('--border_size', metavar='UNITS', required=True,
                         type=float,
-                        help='Width of the border to add, in millimeters.')
+                        help='Width the added border should have in the final '
+                             'image, in units specified by --units.')
     parser.add_argument('--border_color', metavar='COLOR', required=True,
                         help='Color of the border, eg. "#ffffff" for white.')
     parser.add_argument('--units', metavar='UNIT_TYPE', choices=['mm', 'inch'],
-                        default='cm',
-                        help='Units of: --border_mm, --img_mm. Default is mm.')
+                        default='mm',
+                        help='Units of: --border_size, --img_size. '
+                             'Has no real meaning unless --dpi is specified. '
+                             'Default is mm.')
     return parser.parse_args()
 
 
